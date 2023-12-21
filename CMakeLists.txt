@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 find_library(buddyLib buddy HINTS ./lib REQUIRED)
-project(bdd_example LANGUAGES CXX C)
-set(target bdd_main)
+project(matlogic LANGUAGES CXX C)
+set(target matlogic)
 set(CMAKE_CXX_STANDARD 23)
 option(BUILD_TEST OFF)
 set(SOURCE_LIST 
@@ -14,8 +14,9 @@ set(SOURCE_LIST
   src/Conditions.cpp
   src/PrintHelper.hpp
   src/PrintHelper.cpp
-        src/config.cpp src/config.h
-        include/magic_enum.h)
+  src/config.cpp src/config.h
+  include/magic_enum.h
+)
 
 add_executable(${target}
   src/main.cpp
