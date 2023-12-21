@@ -28,7 +28,7 @@ void config::readProperties(std::string &filename) {
             } else if (str.contains("transport")) {
                 auto arr = split(v2[v2.size()-1], '=');
                 secondConditionWithTransport.emplace_back(magic_enum::enum_cast<Nation>(arr[0]).value(), mapP[arr[1]]);
-            } else if (str.contains("color")) {
+            } else if (str.contains("hair")) {
                 auto arr = split(v2[v2.size()-1], '=');
                 secondConditionWithColor.emplace_back(magic_enum::enum_cast<Nation>(arr[0]).value(), mapC[arr[1]]);
             }
@@ -65,7 +65,7 @@ const std::vector<std::tuple<Nation, Transport>> &config::getSecondConditionWith
     return secondConditionWithTransport;
 }
 
-const std::vector<std::tuple<Nation, Color>> &config::getSecondConditionWithColor() const {
+const std::vector<std::tuple<Nation, Hair>> &config::getSecondConditionWithColor() const {
     return secondConditionWithColor;
 }
 

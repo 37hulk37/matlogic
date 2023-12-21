@@ -26,27 +26,27 @@ std::string to_string(bddHelper::Property prop)
   {
     case Property::OWNS:   return "Owns";
     case Property::NATION:   return "Nation";
-    case Property::COLOR:    return "Color";
+    case Property::HAIR:    return "Hair";
     case Property::TRANSPORT:    return "Transport";
   }
   assert(("Bad enum value", false));
   //std::unreachable();
 }
 
-std::string to_string(bddHelper::Color col)
+std::string to_string(bddHelper::Hair col)
 {
   using namespace bddHelper;
   switch (col)
   {
-    case Color::AQUA: return "AQUA";
-    case Color::BEIGE: return "BEIGE";
-    case Color::BLUE: return "BLUE";
-    case Color::BROWN: return "BROWN";
-    case Color::GREEN: return "GREEN";
-    case Color::PURPLE: return "PURPLE";
-    case Color::RED: return "RED";
-    case Color::WHITE: return "WHITE";
-    case Color::YELLOW: return "YELLOW";
+    case Hair::AQUA: return "AQUA";
+    case Hair::BEIGE: return "BEIGE";
+    case Hair::BLUE: return "BLUE";
+    case Hair::BROWN: return "BROWN";
+    case Hair::GREEN: return "GREEN";
+    case Hair::PURPLE: return "PURPLE";
+    case Hair::RED: return "RED";
+    case Hair::WHITE: return "WHITE";
+    case Hair::YELLOW: return "YELLOW";
   }
   assert(("Bad enum value", false));
   //std::unreachable();

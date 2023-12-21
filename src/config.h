@@ -12,7 +12,7 @@ private:
     std::vector<std::tuple<Object, Nation>> firstCondition;
     std::vector<std::tuple<Nation, Owns>> secondConditionWithOwns;
     std::vector<std::tuple<Nation, Transport>> secondConditionWithTransport;
-    std::vector<std::tuple<Nation, Color>> secondConditionWithColor;
+    std::vector<std::tuple<Nation, Hair>> secondConditionWithColor;
     std::vector<std::tuple<Nation, Nation>> thirdCondition;
     std::vector<std::tuple<Nation, Nation>> forthCondition;
 
@@ -28,16 +28,16 @@ private:
             {"PLANE", Transport::PLANE},
             {"TROLLEYBUS", Transport::TROLLEYBUS},
     };
-    std::map<std::string, Color> mapC = {
-            {"RED", Color::RED},
-            {"GREEN", Color::GREEN},
-            {"BLUE", Color::BLUE},
-            {"YELLOW", Color::YELLOW},
-            {"PURPLE", Color::PURPLE},
-            {"BROWN", Color::BROWN},
-            {"AQUA", Color::AQUA},
-            {"BEIGE", Color::BEIGE},
-            {"WHITE", Color::WHITE},
+    std::map<std::string, Hair> mapC = {
+            {"RED", Hair::RED},
+            {"GREEN", Hair::GREEN},
+            {"BLUE", Hair::BLUE},
+            {"YELLOW", Hair::YELLOW},
+            {"PURPLE", Hair::PURPLE},
+            {"BROWN", Hair::BROWN},
+            {"AQUA", Hair::AQUA},
+            {"BEIGE", Hair::BEIGE},
+            {"WHITE", Hair::WHITE},
     };
     std::map<std::string, Owns> mapO = {
             {"DRON", Owns::DRON},
@@ -63,7 +63,7 @@ public:
 
     [[nodiscard]] const std::vector<std::tuple<Nation, Transport>> &getSecondConditionWithTransport() const;
 
-    [[nodiscard]] const std::vector<std::tuple<Nation, Color>> &getSecondConditionWithColor() const;
+    [[nodiscard]] const std::vector<std::tuple<Nation, Hair>> &getSecondConditionWithColor() const;
 
     [[nodiscard]] const std::vector<std::tuple<Nation, Nation>> &getThirdCondition() const;
 

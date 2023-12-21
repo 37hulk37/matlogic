@@ -131,7 +131,7 @@ namespace
    * Says ONE of objects must have both TATARIN with DRON.
    *
    * ```
-   * addLoopCondition({Nation::GERMAN, Color::YELLOW}, ...);
+   * addLoopCondition({Nation::GERMAN, Hair::YELLOW}, ...);
    * ```
    * Says ONE of objects must have both GERMAN with YELLOW color house.
    *
@@ -378,7 +378,7 @@ namespace
 
   // Here we say, that each property value must be used exactly one time
   // For example
-  // Object::FIRST have Color::RED. That means SECOND, THIRD... can not have Color::RED
+  // Object::FIRST have Hair::RED. That means SECOND, THIRD... can not have Hair::RED
   void addUniqueCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config)
   {
     auto propRange = std::views::iota(0, BDDHelper::nProps);
@@ -466,11 +466,11 @@ namespace
    * Here we add conditions of type 3
    * These are addLeftNeighbour and addRightNeighbour
    * For example
-   * addLeftNeighbour(Color::RED, Color::GREEN, h, builder);
+   * addLeftNeighbour(Hair::RED, Hair::GREEN, h, builder);
    * This says next.
    * There MUST exist object that are Neighbours and
-   * one have Color::RED and
-   * HIS LEFT NEIGHBOUR have Color::GREEN.
+   * one have Hair::RED and
+   * HIS LEFT NEIGHBOUR have Hair::GREEN.
    */
   void addThirdCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config)
   {
@@ -479,7 +479,7 @@ namespace
      * to use 4th type condition.
      */
 
-    // addLeftNeighbour(Color::RED, Color::GREEN, h, builder);
+    // addLeftNeighbour(Hair::RED, Hair::GREEN, h, builder);
   }
 
   /**

@@ -15,12 +15,12 @@ namespace bddHelper
    */
 
   enum class ConditionTypes {
-      FIRST,
-      SECOND,
-      THIRD,
-      FOURTH,
-      UNIQUE,
-      UPPER_BOUND
+    FIRST,
+    SECOND,
+    THIRD,
+    FOURTH,
+    UNIQUE,
+    UPPER_BOUND
   };
 
   enum class Object
@@ -42,7 +42,7 @@ namespace bddHelper
    */
   enum class Property
   {
-    COLOR,
+    HAIR,
     NATION,
     TRANSPORT,
     OWNS
@@ -52,7 +52,7 @@ namespace bddHelper
    * Enums below represent each property values
    */
 
-  enum class Color
+  enum class Hair
   {
     RED,
     GREEN,
@@ -106,13 +106,13 @@ namespace bddHelper
    * into int with size checking. Of course we can do static_cast
    * instead of toNum, but for example this
    * ```c++
-   *    auto color = static_cast<Color>(10000); // Color must be from 0 to 8...
+   *    auto color = static_cast<Hair>(10000); // Hair must be from 0 to 8...
    *    auto colorNum = static_cast<int>(color); // Logic error, but no one knows...
    * ```
    * does NOT cause an error and leads to undefined behavour.
    * While this
    * ```c++
-   *    auto color = static_cast<Color>(10000); // Color must be from 0 to 8...
+   *    auto color = static_cast<Hair>(10000); // Hair must be from 0 to 8...
    *    auto colorNum = toNum(color); // Error, program will terminate
    * ```
    * Will throw an assertion error and terminate program.
@@ -132,7 +132,7 @@ namespace bddHelper
   {
     template
     < class V_t, class = std::enable_if_t<
-      std::is_same_v< V_t, Color > ||
+      std::is_same_v< V_t, Hair > ||
       std::is_same_v< V_t, Nation > ||
       std::is_same_v< V_t, Transport > ||
       std::is_same_v< V_t, Owns > > >
@@ -150,9 +150,9 @@ namespace bddHelper
     };
 
     template < class V_t >
-    struct PropertyFromValueEnum< V_t, std::enable_if_t< std::is_same_v< V_t, Color > > >
+    struct PropertyFromValueEnum< V_t, std::enable_if_t< std::is_same_v< V_t, Hair > > >
     {
-      static constexpr Property value = Property::COLOR;
+      static constexpr Property value = Property::HAIR;
     };
 
     template < class V_t >
@@ -231,7 +231,7 @@ namespace bddHelper
     /**
      * PropertyFromValueEnum_v
      * For example, this will convert
-     * - Color::RED to Property::Color.
+     * - Hair::RED to Property::Hair.
      * - Owns::Bird to Property::Owns.
      *
      * It's way better than passing Property as additional parameter,

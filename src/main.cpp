@@ -25,13 +25,13 @@
  * So we say, let's create nValuesVars, so that
  * var[0] var[1] var[2] var[3] will set first object's FIRST property value.
  * We can set var[0] var[1] var[2] var[3] as 0001 - first object's first property
- * value is second. In my program this means first object's Color is Green.
+ * value is second. In my program this means first object's Hair is Green.
  *
  * var[4] var[5] var[6] var[7] will set first object's SECOND property value.
  * We can set var[4] var[5] var[6] var[7] as 0001 - first object's SECOND property
  * value is second. In my program this means first object's Nation is Belarus.
  *
- * Objects in my program like houses, which has Color, where lives Nation person,
+ * Objects in my program like houses, which has Hair, where lives Nation person,
  * that has some Transport and has some Owns. Yet i'm not high btw...
  */
 
@@ -43,11 +43,11 @@ template < class T > using vect = std::vector< T >;
 constexpr int nObjs = bddHelper::BDDHelper::nObjs;
 
 // Each object has nProps properties, for example
-// Color, Owns, Transport
+// Hair, Owns, Transport
 constexpr int nProps = bddHelper::BDDHelper::nProps;
 
 /**Each property has nVals variants, for example
-   property Color has Green Red Blue...,
+   property Hair has Green Red Blue...,
    property Owns has Bird PLANE DRON...*/
 constexpr int nVals = bddHelper::BDDHelper::nVals;
 
@@ -91,8 +91,8 @@ void printProp(Property prop, int valNum)
           std::cout << to_string(static_cast< Owns >(valNum)) << '\n';
           break;
 
-        case Property::COLOR:
-          std::cout << to_string(static_cast< Color >(valNum)) << '\n';
+        case Property::HAIR:
+          std::cout << to_string(static_cast< Hair >(valNum)) << '\n';
           break;
 
         case Property::NATION:
