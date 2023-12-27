@@ -10,10 +10,6 @@
 
 namespace bddHelper
 {
-  /**
-   * Here we have enum, that represents objects.
-   */
-
   enum class ConditionTypes {
     FIRST,
     SECOND,
@@ -37,9 +33,6 @@ namespace bddHelper
   };
 
 
-  /**
-   * This enum represents each object properties
-   */
   enum class Property
   {
     HAIR,
@@ -47,10 +40,6 @@ namespace bddHelper
     TRANSPORT,
     OWNS
   };
-
-  /**
-   * Enums below represent each property values
-   */
 
   enum class Hair
   {
@@ -101,30 +90,9 @@ namespace bddHelper
     ELEPHANT
   };
 
-  /**
-   * Funciton used to transform all but Property enums values
-   * into int with size checking. Of course we can do static_cast
-   * instead of toNum, but for example this
-   * ```c++
-   *    auto color = static_cast<Hair>(10000); // Hair must be from 0 to 8...
-   *    auto colorNum = static_cast<int>(color); // Logic error, but no one knows...
-   * ```
-   * does NOT cause an error and leads to undefined behavour.
-   * While this
-   * ```c++
-   *    auto color = static_cast<Hair>(10000); // Hair must be from 0 to 8...
-   *    auto colorNum = toNum(color); // Error, program will terminate
-   * ```
-   * Will throw an assertion error and terminate program.
-   * Defending from ourselves.
-   */
   template< class Enum_Val_t >
   int toNum(Enum_Val_t value);
 
-  /**
-   * @overload
-   * Same as previous one, but works exactly with Property enum.
-   */
   int toNum(Property value);
 
   // Just ignore that. Purely C++ shit
@@ -146,7 +114,6 @@ namespace bddHelper
     template < class V_t, class = void >
     struct PropertyFromValueEnum
     {
-      static_assert(true, "Incorrect value passed to research property type");
     };
 
     template < class V_t >
@@ -220,24 +187,12 @@ namespace bddHelper
     vect< vect< vect< bdd > > > values_;
   };
 
-  /**
-   * See values_ array description in constructor comments.
-   */
+
   template < class V_t >
   inline bdd BDDHelper::getObjectVal(Object obj, V_t value)
   {
     static_assert(traits_::IsValueType_v< V_t >, "Value must be one of properties type");
     auto objNum = toNum(obj);
-    /**
-     * PropertyFromValueEnum_v
-     * For example, this will convert
-     * - Hair::RED to Property::Hair.
-     * - Owns::Bird to Property::Owns.
-     *
-     * It's way better than passing Property as additional parameter,
-     * because we can by mistake pass Property::Owns and Nation::4e4enec.
-     * This will lead to undefined behaviour, and no one can check this error...
-     */
     auto propNum = toNum(traits_::PropertyFromValueEnum_v< V_t >);
     auto valNum = toNum(value);
     return values_[objNum][propNum][valNum];

@@ -16,6 +16,12 @@ private:
     std::vector<std::tuple<Nation, Nation>> thirdCondition;
     std::vector<std::tuple<Nation, Nation>> forthCondition;
 
+    std::vector<int> leftNeighbourXYOffset;
+    std::vector<int> rightNeighbourXYOffset;
+
+    bool vertSkleika;
+    bool horSkleika;
+
     std::map<std::string, Transport> mapP = {
             {"HELICOPTER", Transport::HELICOPTER},
             {"BUS", Transport::BUS},
@@ -68,6 +74,18 @@ public:
     [[nodiscard]] const std::vector<std::tuple<Nation, Nation>> &getThirdCondition() const;
 
     [[nodiscard]] const std::vector<std::tuple<Nation, Nation>> &getForthCondition() const;
+
+    std::vector<int> & getLeftNeighbourXyOffset();
+
+    std::vector<int> & getRightNeighbourXyOffset();
+
+    bool isVertSkleika() {
+        return vertSkleika;
+    }
+
+    bool isHorSkleika() {
+        return horSkleika;
+    }
 };
 
 

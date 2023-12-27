@@ -18,26 +18,32 @@ void config::readProperties(std::string &filename) {
         auto v1 = split(str,  '=');
         auto v2 = split(str, '.');
 
+        auto arr = split(v2[v2.size()-1], '=');
+
         if (str.contains("first")) {
-            auto arr = split(v2[v2.size()-1], '=');
             firstCondition.emplace_back(magic_enum::enum_cast<Object>(arr[0]).value(), magic_enum::enum_cast<Nation>(arr[1]).value());
         } else if (str.contains("second")) {
             if (str.contains("owns")) {
-                auto arr = split(v2[v2.size()-1], '=');
                 secondConditionWithOwns.emplace_back(magic_enum::enum_cast<Nation>(arr[0]).value(), mapO[arr[1]]);
             } else if (str.contains("transport")) {
-                auto arr = split(v2[v2.size()-1], '=');
                 secondConditionWithTransport.emplace_back(magic_enum::enum_cast<Nation>(arr[0]).value(), mapP[arr[1]]);
             } else if (str.contains("hair")) {
-                auto arr = split(v2[v2.size()-1], '=');
                 secondConditionWithColor.emplace_back(magic_enum::enum_cast<Nation>(arr[0]).value(), mapC[arr[1]]);
             }
-        }else if (str.contains("third")) {
-            auto arr = split(v2[v2.size()-1], '=');
+        } else if (str.contains("third")) {
             forthCondition.emplace_back(magic_enum::enum_cast<Nation>(arr[0]).value(), magic_enum::enum_cast<Nation>(arr[1]).value());
         } else if (str.contains("forth")) {
-            auto arr = split(v2[v2.size()-1], '=');
             forthCondition.emplace_back(magic_enum::enum_cast<Nation>(arr[0]).value(), magic_enum::enum_cast<Nation>(arr[1]).value());
+        } else if (str.contains("neigh")) {
+            if (str.contains("left")) {
+                leftNeighbourXYOffset.emplace_back(stoi(arr[arr.size()-1]));
+            } else {
+                rightNeighbourXYOffset.emplace_back(stoi(arr[arr.size()-1]));
+            }
+        } else if (str.contains("vertSkleika")) {
+            vertSkleika = arr[1] == "1";
+        } else {
+            horSkleika = arr[1] == "1";
         }
     }
 }
@@ -75,4 +81,12 @@ const std::vector<std::tuple<Nation, Nation>> &config::getThirdCondition() const
 
 const std::vector<std::tuple<Nation, Nation>> &config::getForthCondition() const {
     return forthCondition;
+}
+
+std::vector<int> & config::getLeftNeighbourXyOffset() {
+    return leftNeighbourXYOffset;
+}
+
+std::vector<int> & config::getRightNeighbourXyOffset() {
+    return rightNeighbourXYOffset;
 }

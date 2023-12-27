@@ -12,7 +12,7 @@
 
 using namespace bddHelper;
 
-namespace // Dont read this...
+namespace
 {
   template < class ... Trest >
   struct unique_types;
@@ -30,15 +30,12 @@ namespace // Dont read this...
 
 namespace std
 {
-  // True if low >= val <= hi;
-  // Other words, true if value between low and hi
   template< class T >
   bool between(T const &val, T const &lo, T const &hi)
   {
     return between( val, lo, hi, std::less_equal< T >() );
   }
 
-  // Just ignore that
   template< class T, class Compare >
   bool between(T const &val, T const &lo, T const &hi, Compare comp)
   {
@@ -48,49 +45,24 @@ namespace std
 
 namespace
 {
-  /**
-   * Use these to set neighbours.
-   * For example, {0, -1} means neighbour
-   *    N * N
-   *    N O N
-   *    N N N
-   *
-   * {1, 1} means neighbour
-   *    N N N
-   *    N O N
-   *    N N *
-   *
-   * X is horizontal
-   * Y is vertical.
-   *    X
-   *    0 1 2
-   * Y 0
-   *   1
-   *   2
-   */
-  std::vector leftNeighbourXYOffset = { 0, -1 };
-  std::vector rightNeighbourXYOffset = { -1, 0 };
-  // Use to enable disable any skleika
-  // Read about this at 30 page.
-  constexpr bool vertSkleika = false;
-  constexpr bool horSkleika = false;
+  std::vector leftNeighbourXYOffset = {0, -1};
+  std::vector rightNeighbourXYOffset = {-1, 0};
+
+  constexpr bool vertSkleika = true;
+  constexpr bool horSkleika = true;
 
   // Don't touch it...
-  constexpr bool useSkleika = vertSkleika || horSkleika;
+  bool useSkleika = vertSkleika || horSkleika;
 
-  // See below
   template < class ... V_ts >
   void addLoopCondition(std::tuple< V_ts... > values, BDDHelper &h, BDDFormulaBuilder &builder);
 
-  // See below
   template < class V_t1, class V_t2 >
   void addNeighbours(V_t1 value1, V_t2 value2, BDDHelper &h, BDDFormulaBuilder &builder);
 
-  // See below
   template < class V_t1, class V_t2 >
   void addLeftNeighbour(V_t1 value1, V_t2 value2, BDDHelper &h, BDDFormulaBuilder &builder);
 
-  // See below
   template < class V_t1, class V_t2 >
   void addRightNeighbour(V_t1 value1, V_t2 value2, BDDHelper &h, BDDFormulaBuilder &builder);
 
@@ -121,27 +93,6 @@ namespace
   // See below
   void addValuesUpperBoundCondition(BDDHelper &h, BDDFormulaBuilder &builder);
 
-  /**
-   * Sets second type condition.
-   *
-   * Examples:
-   * ```
-   * addLoopCondition({Nation::TATARIN, Owns::DRON}, ...);
-   * ```
-   * Says ONE of objects must have both TATARIN with DRON.
-   *
-   * ```
-   * addLoopCondition({Nation::GERMAN, Hair::YELLOW}, ...);
-   * ```
-   * Says ONE of objects must have both GERMAN with YELLOW color house.
-   *
-   * ```
-   * addLoopCondition({Nation::GERMAN, Nation::ARGENTINIAN}, ...);
-   * ```
-   * Says ONE of objects must have both GERMAN and ARGENTINIAN.
-   * This is impossible condition, so called controversy, so result
-   * function will always return false.
-   */
   template < class ... V_ts >
   void addLoopCondition(std::tuple< V_ts... > values, BDDHelper &h, BDDFormulaBuilder &builder)
   {
@@ -157,66 +108,40 @@ namespace
       std::apply([&formulas, &h, &obj](auto &&... args) {
         ((formulas &= h.getObjectVal(obj, args)), ...); //Here we say current object must have all given values.
       }, values);
-      // Here we say that there must be
-      // first object with all values or
-      // second object with all values or
-      // third object with all values or...
       resultFormulaToAdd |= formulas;
     }
     // Add result condition
     builder.addCondition(resultFormulaToAdd);
   }
 
-  // This function says that there must be any neighbours
-  // so that first must have value1 and
-  //          second must have value2
-  // No matter who is left and who is right.
-  // Things that relate to skleika and some other shit
-  // handled in getNeighbours function
   template < class V_t1, class V_t2 >
   void addNeighbours(V_t1 value1, V_t2 value2, BDDHelper &h, BDDFormulaBuilder &builder)
   {
     static_assert(traits_::IsValueType_v< V_t1 > && traits_::IsValueType_v< V_t2 >, "Value must be one of properties type");
     auto resultFormulaToAdd = bdd_false();
-    // So we loop though the objects and say that
-    // for ANY object...
     for (auto objNum : std::views::iota(0, BDDHelper::nObjs))
     {
       auto obj = static_cast< Object >(objNum);
-      // ...current object must have value1 and
-      // current object's any neighbour must have value2
-      for (auto neighbObj : getNeighbours(obj)) // According to skleika we may have or not neighbours of current object
+      for (auto neighbObj : getNeighbours(obj))
         resultFormulaToAdd |= (h.getObjectVal(obj, value1) & h.getObjectVal(neighbObj, value2));
     }
-    // Add result condition to formula
     builder.addCondition(resultFormulaToAdd);
   }
 
-  // This function says that there must be any LEFT neighbours
-  // so that first must have value1 and
-  //          second must have value2
-  // Here we say, that second IS LEFT neighbour of first
-  // Things that relate to skleika and some other shit
-  // handled in getLeftNeighbour function
   template < class V_t1, class V_t2 >
   void addLeftNeighbour(V_t1 value1, V_t2 value2, BDDHelper &h, BDDFormulaBuilder &builder)
   {
     static_assert(traits_::IsValueType_v< V_t1 > && traits_::IsValueType_v< V_t2 >, "Value must be one of properties type");
     auto resultFormulaToAdd = bdd_false();
-    // So we loop though the objects and say that
-    // for ANY object...
     for (auto objNum : std::views::iota(0, BDDHelper::nObjs))
     {
       auto obj = static_cast< Object >(objNum);
-      // ...current object must have value1 and
-      // current object's LEFT neighbour must have value2
       if (auto neighbObj = getLeftNeighbour(obj); neighbObj.has_value())
         resultFormulaToAdd |= (h.getObjectVal(obj, value1) & h.getObjectVal(*neighbObj, value2));
     }
     builder.addCondition(resultFormulaToAdd);
   }
 
-  // Read about left neighbour if need
   template < class V_t1, class V_t2 >
   void addRightNeighbour(V_t1 value1, V_t2 value2, BDDHelper &h, BDDFormulaBuilder &builder)
   {
@@ -242,10 +167,6 @@ namespace
     return res;
   }
 
-  // This function searches neighbour for obj
-  // If neighbour exists - return neighbour object.
-  // Else return None
-  // Neighbour may not exist if skleika not enabled
   std::optional< Object > getNeighbour_(Object obj, std::vector< int > neighbourXYOffset)
   {
     assert(neighbourXYOffset.size() == 2);
@@ -263,14 +184,6 @@ namespace
         assert(std::between(p.x, 0, 2) and std::between(p.y, 0, 2));
         return static_cast< Object >(p.x + p.y * 3);
       };
-    /**
-     * Execute horizontal skleika.
-     * For example
-     * Point p{-1, 0} will be converted to {2, 0}
-     * Point p{-2, 0} will be converted to {1, 0}
-     * Point p{3, 0} will be converted to {0, 0}
-     * Point p{4, 0} will be converted to {1, 0}
-     */
     auto normX =
       [](Point p) -> Point {
         assert(!std::between(p.x, 0, 2));
@@ -281,14 +194,6 @@ namespace
           res.x = p.x % 3;
         return res;
       };
-    /**
-     * Execute vertical skleika.
-     * For example
-     * Point p{0, -1} will be converted to {0, 2}
-     * Point p{0, -2} will be converted to {0, 1}
-     * Point p{0, 3} will be converted to {0, 0}
-     * Point p{0, 4} will be converted to {0, 1}
-     */
     auto normY =
       [](Point p) -> Point {
         assert(!std::between(p.y, 0, 2));
@@ -308,38 +213,31 @@ namespace
     auto objNum = toNum(obj); // First we convert obj to int
     Point objPos = { objNum % 3, objNum / 3 }; // next we calculate obj coordinates
     Point neighbObjPos = { objPos.x + neighbourXYOffset[0], objPos.y + neighbourXYOffset[1] }; // calcuate neighbour coords
-    // Now we have 4 situations.
-    // First is when both horizontal and vertical limits are exceeded
-    // It means we need both vertical and horizontal skleika
+
     if (!std::between(neighbObjPos.x, 0, 2) and !std::between(neighbObjPos.y, 0, 2))
     {
       if (!vertSkleika or !horSkleika)
         return std::nullopt;
       return pointToObj(normX(normY(neighbObjPos)));
     }
-    // Second is when only horizontal limit is exceeded
-    // It means we need horizontal skleika
     if (!std::between(neighbObjPos.x, 0, 2))
     {
       if (!horSkleika)
         return std::nullopt;
       return pointToObj(normX(neighbObjPos));
     }
-    // Third is when only vertical limit is exceeded
-    // It means we need vertical skleika
+
     if (!std::between(neighbObjPos.y, 0, 2))
     {
       if (!vertSkleika)
         return std::nullopt;
       return pointToObj(normY(neighbObjPos));
     }
-    // Fourth is when no limits are exceeded
-    // No skleika is needed
+
     return pointToObj(neighbObjPos);
   }
 
-  // Just return left and right neighbours.
-  // May return empty array or only one neighbour.
+
   std::vector< Object > getNeighbours(Object obj)
   {
     auto left = getLeftNeighbour(obj);
@@ -352,16 +250,11 @@ namespace
     return resArr;
   }
 
-  // Speaks for itself
   bdd equal(bdd a, bdd b)
   {
     return (a & b) | ((not a) & (not b));
   }
 
-  // a and b each contain 4 bdd variables
-  // We say return condition
-  // a[0] != b[0] or a[1] != b[1] or ... a[3] != b[3]
-  // It's like comparing two binary numbers. Actually that is it.
   bdd notEqual(std::vector< bdd > a, std::vector< bdd > b)
   {
     assert(a.size() == 4 && a.size() == b.size());
@@ -376,9 +269,7 @@ namespace
     });
   }
 
-  // Here we say, that each property value must be used exactly one time
-  // For example
-  // Object::FIRST have Hair::RED. That means SECOND, THIRD... can not have Hair::RED
+
   void addUniqueCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config)
   {
     auto propRange = std::views::iota(0, BDDHelper::nProps);
@@ -387,51 +278,35 @@ namespace
       [&](auto propNum) {
       auto prop = static_cast< Property >(propNum);
       auto obj1Range = std::views::iota(0, BDDHelper::nObjs);
-      // Loop over objects
       std::for_each(std::execution::par, obj1Range.begin(), obj1Range.end(),
         [&](auto objNum1) {
         auto obj1 = static_cast< Object >(objNum1);
         auto obj2Range = std::views::iota(objNum1 + 1, BDDHelper::nObjs);
-        // Loop over objects start with obj1+1
         std::for_each(std::execution::par, obj2Range.begin(), obj2Range.end(),
           [&](auto objNum2) {
           auto obj2 = static_cast< Object >(objNum2);
-          // We say that for current property
-          // obj1 property value must be not equal to obj2 property value
           builder.addConditionTh(notEqual(h.getObjPropertyVars(obj1, prop), h.getObjPropertyVars(obj2, prop)));
         });
       });
     });
   }
 
-  // Here we simply state that each object's properties values must be less than 9
-  // In other words, each object's properties values must be NOT 9 NOT 10 NOT 11... NOT 15
   void addValuesUpperBoundCondition(BDDHelper &h, BDDFormulaBuilder &builder)
   {
-    // Loop over objects
     for (auto objNum : std::views::iota(0, BDDHelper::nObjs))
     {
       auto obj = static_cast< Object >(objNum);
-      // Loop over properties
       for (auto propNum : std::views::iota(0, BDDHelper::nProps))
       {
         auto prop = static_cast< Property >(propNum);
-        // Loop over possible property value numbers
         for (auto valNum : std::views::iota(9, 16))
         {
-          // Say that for object obj property prop can not have value equal to valNum
           builder.addCondition(not h.numToBinUnsafe(valNum, h.getObjPropertyVars(obj, prop)));
         }
       }
     }
   }
 
-  /**
-   * Here we add conditions of type 1
-   * For example
-   * builder.addCondition(h.getObjectVal(Object::FIRST, Nation::TATARIN));
-   * This means that First object MUST have Property Nation with value Nation::TATARIN
-   */
   void addFirstCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config)
   {
       for (auto fconfig: config.getFirstCondition()) {
@@ -439,14 +314,6 @@ namespace
       }
   }
 
-  /**
-   * Here we add conditions of type 2
-   * For example
-   * addLoopCondition(std::make_tuple(Nation::TATARIN, Owns::DRON), h, builder);
-   * This says next.
-   * There MUST exist object that has BOTH Nation::TATARIN and Owns::DRON.
-   * No matter if it Object::FIRST or Object::SECOND or...
-   */
   void addSecondCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config)
   {
       for (auto fconfig: config.getSecondConditionWithOwns()) {
@@ -462,37 +329,8 @@ namespace
       }
   }
 
-  /**
-   * Here we add conditions of type 3
-   * These are addLeftNeighbour and addRightNeighbour
-   * For example
-   * addLeftNeighbour(Hair::RED, Hair::GREEN, h, builder);
-   * This says next.
-   * There MUST exist object that are Neighbours and
-   * one have Hair::RED and
-   * HIS LEFT NEIGHBOUR have Hair::GREEN.
-   */
-  void addThirdCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config)
-  {
-    /**
-     * I didn't add any conditions, because i preferred
-     * to use 4th type condition.
-     */
+  void addThirdCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config) {}
 
-    // addLeftNeighbour(Hair::RED, Hair::GREEN, h, builder);
-  }
-
-  /**
-   * Here we add conditions of type 4
-   * For example
-   * addNeighbours(Nation::CHINESE, Nation::AUSTRALIAN, h, builder);
-   * This says next.
-   * There MUST exist object that are Neighbours and
-   * one have Nation::CHINESE and
-   * second have Nation::AUSTRALIAN.
-   * 
-   * Actually it uses addLeftNeighbour and addLeftNeighbour
-   */
   void addFourthCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config)
   {
         for (auto fconfig: config.getForthCondition()) {
