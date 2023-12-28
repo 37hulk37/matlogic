@@ -45,14 +45,15 @@ namespace std
 
 namespace
 {
+  config config;
   std::vector leftNeighbourXYOffset = {0, -1};
   std::vector rightNeighbourXYOffset = {-1, 0};
 
-  constexpr bool vertSkleika = true;
-  constexpr bool horSkleika = true;
+  bool vSkl = config.isVertSkleika();
+  bool hSkl = config.isHorSkleika();
 
   // Don't touch it...
-  bool useSkleika = vertSkleika || horSkleika;
+  bool useSkleika = vSkl || hSkl;
 
   template < class ... V_ts >
   void addLoopCondition(std::tuple< V_ts... > values, BDDHelper &h, BDDFormulaBuilder &builder);
@@ -216,20 +217,20 @@ namespace
 
     if (!std::between(neighbObjPos.x, 0, 2) and !std::between(neighbObjPos.y, 0, 2))
     {
-      if (!vertSkleika or !horSkleika)
+      if (!vSkl or !hSkl)
         return std::nullopt;
       return pointToObj(normX(normY(neighbObjPos)));
     }
     if (!std::between(neighbObjPos.x, 0, 2))
     {
-      if (!horSkleika)
+      if (!hSkl)
         return std::nullopt;
       return pointToObj(normX(neighbObjPos));
     }
 
     if (!std::between(neighbObjPos.y, 0, 2))
     {
-      if (!vertSkleika)
+      if (!vSkl)
         return std::nullopt;
       return pointToObj(normY(neighbObjPos));
     }
@@ -270,7 +271,7 @@ namespace
   }
 
 
-  void addUniqueCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config)
+  void addUniqueCondition(BDDHelper &h, BDDFormulaBuilder &builder)
   {
     auto propRange = std::views::iota(0, BDDHelper::nProps);
     //We loop over properties
@@ -307,14 +308,14 @@ namespace
     }
   }
 
-  void addFirstCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config)
+  void addFirstCondition(BDDHelper &h, BDDFormulaBuilder &builder)
   {
       for (auto fconfig: config.getFirstCondition()) {
           builder.addCondition(h.getObjectVal(std::get<0>(fconfig), std::get<1>(fconfig)));
       }
   }
 
-  void addSecondCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config)
+  void addSecondCondition(BDDHelper &h, BDDFormulaBuilder &builder)
   {
       for (auto fconfig: config.getSecondConditionWithOwns()) {
           addLoopCondition(fconfig, h, builder);
@@ -329,9 +330,9 @@ namespace
       }
   }
 
-  void addThirdCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config) {}
+  void addThirdCondition(BDDHelper &h, BDDFormulaBuilder &builder) {}
 
-  void addFourthCondition(BDDHelper &h, BDDFormulaBuilder &builder, config& config)
+  void addFourthCondition(BDDHelper &h, BDDFormulaBuilder &builder)
   {
         for (auto fconfig: config.getForthCondition()) {
             addNeighbours(std::get<0>(fconfig), std::get<1>(fconfig), h, builder);
@@ -341,26 +342,26 @@ namespace
 
 namespace conditions
 {
-    void addConditionByType(ConditionTypes type, BDDHelper &h, BDDFormulaBuilder &builder, config& config) {
+    void addConditionByType(ConditionTypes type, BDDHelper &h, BDDFormulaBuilder &builder) {
         switch (type) {
             case ConditionTypes::FIRST: {
-                addFirstCondition(h, builder, config);
+                addFirstCondition(h, builder);
                 break;
             }
             case ConditionTypes::SECOND: {
-                addSecondCondition(h, builder, config);
+                addSecondCondition(h, builder);
                 break;
             }
             case ConditionTypes::THIRD: {
-                addThirdCondition(h, builder, config);
+                addThirdCondition(h, builder);
                 break;
             }
             case ConditionTypes::FOURTH: {
-                addFourthCondition(h, builder, config);
+                addFourthCondition(h, builder);
                 break;
             }
             case ConditionTypes::UNIQUE: {
-                addUniqueCondition(h, builder, config);
+                addUniqueCondition(h, builder);
                 break;
             }
             case ConditionTypes::UPPER_BOUND: {
@@ -370,10 +371,10 @@ namespace conditions
         }
     }
 
-      void addConditions(BDDHelper &h, BDDFormulaBuilder &builder, const std::set<ConditionTypes>& types, config& config)
+      void addConditions(BDDHelper &h, BDDFormulaBuilder &builder, const std::set<ConditionTypes>& types)
       {
           for (auto type: types) {
-              addConditionByType(type, h, builder, config);
+              addConditionByType(type, h, builder);
           }
       }
 }

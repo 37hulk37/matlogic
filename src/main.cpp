@@ -132,7 +132,7 @@ void printProp(Property prop, int valNum)
     bddHelper::BDDHelper h(structedVars);
     // Simpliest class in the world. Just contains result formula.
     BDDFormulaBuilder builder;
-    conditions::addConditions(h, builder, types, config);
+    conditions::addConditions(h, builder, types);
     std::cout << "Bdd formula created. Starting counting sets...\n";
     std::cout << "Count of true variables values combinations: " << bdd_satcount(builder.result()) << '\n';
     std::cout << "Objects are...\n";

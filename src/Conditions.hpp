@@ -6,5 +6,5 @@
 using namespace bddHelper;
 namespace conditions
 {
-  void addConditions(bddHelper::BDDHelper &h, BDDFormulaBuilder &builder, const std::set<ConditionTypes>& types, config& config);
+  void addConditions(bddHelper::BDDHelper &h, BDDFormulaBuilder &builder, const std::set<ConditionTypes>& types);
 }
