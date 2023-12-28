@@ -46,8 +46,8 @@ namespace std
 namespace
 {
   config config;
-  std::vector leftNeighbourXYOffset = {0, -1};
-  std::vector rightNeighbourXYOffset = {-1, 0};
+  std::vector leftNeighbourXYOffset = config.getLeftNeighbourXyOffset();
+  std::vector rightNeighbourXYOffset = config.getRightNeighbourXyOffset();
 
   bool vSkl = config.isVertSkleika();
   bool hSkl = config.isHorSkleika();

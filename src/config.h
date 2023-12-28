@@ -79,11 +79,11 @@ public:
 
     std::vector<int> & getRightNeighbourXyOffset();
 
-    bool isVertSkleika() {
+    [[nodiscard]] bool isVertSkleika() const {
         return vertSkleika;
     }
 
-    bool isHorSkleika() {
+    [[nodiscard]] bool isHorSkleika() const {
         return horSkleika;
     }
 };
